@@ -1,0 +1,150 @@
+1. Write a Java Program using JSP to print the following. 
+
+1 1 1 1 1 
+2 2 2 2 
+3 3 3 
+4 4 
+5 
+
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pattern Program</title>
+</head>
+<body>
+
+<form action="PatternServlet">
+    <input type="submit" value="Print Pattern">
+</form>
+
+</body>
+</html>
+
+
+PatternServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class PatternServlet extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Generate pattern
+        StringBuilder pattern = new StringBuilder();
+
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 5; j >= i; j--) {
+                pattern.append(i).append(" ");
+            }
+            pattern.append("<br>");
+        }
+
+        // Store pattern in request scope
+        request.setAttribute("pattern", pattern.toString());
+
+        // Forward to JSP
+        RequestDispatcher rd = request.getRequestDispatcher("pattern.jsp");
+        rd.forward(request, response);
+    }
+}
+
+
+pattern.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<html>
+<head>
+    <title>Pattern Output</title>
+</head>
+<body>
+
+<h2>Pattern Output</h2>
+
+<%
+    String result = (String) request.getAttribute("pattern");
+    out.print(result);
+%>
+
+</body>
+</html>
+
+
+web.xml
+<web-app>
+    <servlet>
+        <servlet-name>PatternServlet</servlet-name>
+        <servlet-class>PatternServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PatternServlet</servlet-name>
+        <url-pattern>/PatternServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+2. Send a text email with an attachment using Java code
+SendEmailWithAttachment.java
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.activation.*;
+
+public class SendEmailWithAttachment {
+
+    public static void main(String[] args) {
+
+        // Sender email credentials
+        final String senderEmail = "your_email@gmail.com";
+        final String senderPassword = "your_app_password";
+
+        // Receiver email
+        String receiverEmail = "receiver_email@gmail.com";
+
+        // SMTP server properties
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        // Session
+        Session session = Session.getInstance(props, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderEmail, senderPassword);
+            }
+        });
+
+        try {
+            // Create message
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(senderEmail));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(receiverEmail));
+            message.setSubject("Test Email with Attachment");
+
+            // Text part
+            BodyPart textPart = new MimeBodyPart();
+            textPart.setText("Hello,\nThis is a test email with attachment.");
+
+            // Attachment part
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            attachmentPart.attachFile("C:/files/sample.pdf");
+
+            // Combine parts
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(textPart);
+            multipart.addBodyPart(attachmentPart);
+
+            message.setContent(multipart);
+
+            // Send email
+            Transport.send(message);
+            System.out.println("Email sent successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
