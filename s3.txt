@@ -1,0 +1,151 @@
+1.	Write a servlet to determine whether the entered name from the html form is palindrome or not. 
+	(15)
+
+palindromeAPI.java(main) 
+package springpalindromeAPI; 
+import org.springframework.boot.SpringApplication; 
+import org.springframework.boot.autoconfigure.SpringBootApplication; 
+@SpringBootApplication 
+public class palindromeAPI { 
+public static void main(String[] args) { 
+SpringApplication.run(palindromeAPI.class, args); 
+} 
+} 
+PalindromeApplication.java 
+package springpalindromeAPI; 
+import org.springframework.boot.SpringApplication; 
+import org.springframework.boot.autoconfigure.SpringBootApplication; 
+import org.springframework.web.bind.annotation.*; 
+@SpringBootApplication 
+@RestController 
+@RequestMapping("/palindrome") 
+public class PalindromeApplication { 
+public static void main(String[] args) { 
+SpringApplication.run(PalindromeApplication.class, args); 
+} 
+@PostMapping 
+public @ResponseBody String checkPalindrome(@RequestBody PalindromeInput input) { 
+String text = input.getInput(); 
+String cleanText = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase(); 
+boolean isPalindrome = cleanText.equalsIgnoreCase(new StringBuilder(cleanText).reverse().toString()); 
+if (isPalindrome) { 
+return text + "\n" + " is a palindrome!"; 
+} else { 
+return text + "\n" + "is not a palindrome."; // Added newline and explicit "not" 
+} 
+} 
+} 
+class PalindromeInput { 
+private String input; 
+public String getInput() { 
+return input; 
+} 
+public void setInput(String input) { 
+this.input = input; 
+} 
+} 
+pom.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"> 
+<modelVersion>4.0.0</modelVersion> 
+<parent> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-parent</artifactId> 
+<version>3.1.6</version> 
+<relativePath/> <!-- lookup parent from repository --> 
+</parent> 
+<groupId>palindromeAPI</groupId> 
+<artifactId>PRACTCIAL-10-3</artifactId> 
+<version>0.0.1-SNAPSHOT</version> 
+<name>PRACTCIAL-10-3</name> 
+<description>Demo project for Spring Boot</description> 
+<properties> 
+<java.version>17</java.version> 
+</properties> 
+<dependencies> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-web</artifactId> 
+</dependency> 
+</dependencies> 
+<build> 
+<plugins> 
+<plugin> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-maven-plugin</artifactId> 
+<configuration> 
+<mainClass>palindromeAPI</mainClass> 
+</configuration>   
+</plugin> 
+</plugins> 
+</build> 
+</project> 
+
+
+2. Write a Spring MVC API to accept two numbers and return their addition 
+
+A) 
+addition_API.java 
+package springaddition; 
+import org.springframework.boot.SpringApplication; 
+import org.springframework.boot.autoconfigure.SpringBootApplication; 
+@SpringBootApplication 
+public class addition_API { 
+public static void main(String[] args) { 
+SpringApplication.run(addition_API.class, args); 
+System.out.println("Application started! " 
++ "Copy This URL: http://localhost:8080/add?num1=5&num2=10"); 
+} 
+}  
+AdditionController.java 
+package springaddition; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.RequestParam; 
+import org.springframework.web.bind.annotation.RestController; 
+@RestController 
+public class AdditionController { 
+@GetMapping("/add") 
+public String addNumbers(@RequestParam int num1, @RequestParam int num2) { 
+int sum = num1 + num2; 
+return "Spring MVC API : The sum of " + num1 + " and " + num2 + " is: " + sum; 
+} 
+} 
+Pom.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"> 
+<modelVersion>4.0.0</modelVersion> 
+<parent> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-parent</artifactId> 
+<version>3.0.1</version> 
+<relativePath/> 
+</parent> 
+<groupId>AdditionController</groupId> 
+<artifactId>PRACTICLA-10-2</artifactId> 
+<version>0.0.1-SNAPSHOT</version> 
+<name>PRACTICLA-10</name> 
+<description>Student API project using Spring Boot</description> 
+<properties> 
+<java.version>17</java.version> 
+</properties> 
+<dependencies> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-web</artifactId> 
+</dependency> 
+</dependencies> 
+<build> 
+<plugins> 
+<plugin> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-maven-plugin</artifactId> 
+<configuration> 
+<mainClass>AdditionController</mainClass> 
+</configuration> 
+</plugin> 
+</plugins> 
+</build> 
+</project> 
