@@ -1,0 +1,177 @@
+1.	Table (Employee: id int Primary key, name varchar(200), dept varchar(50), designation varchar(100),salary float, dateofjoin date)                                         
+
+1. Write an Hibernate API to add an employee in given table. 
+2. Write an Hibernate API to update the name of employee on id 1 
+3. Write an Hibernate API to delete an employee on id 3 
+
+1st Query: Write an Hibernate API to add an employee in given table.  
+Addemployee.java 
+package hibernatejava; 
+import org.hibernate.Session; 
+import org.hibernate.SessionFactory; 
+import org.hibernate.Transaction; 
+import org.hibernate.cfg.Configuration; 
+import java.util.ArrayList; 
+import java.util.List; 
+public class AddEmployee { 
+    public static void main(String[] args) { 
+        Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class); 
+        SessionFactory factory = config.buildSessionFactory(); 
+        Session session = factory.openSession(); 
+        Transaction tx = session.beginTransaction(); 
+        List<Employee> employees = createEmployeeList(); 
+        for (Employee employee : employees) { 
+            session.save(employee); 
+        } 
+        tx.commit(); 
+        session.close(); 
+        factory.close(); 
+        System.out.println("Data entered successfully!"); 
+    } 
+    private static List<Employee> createEmployeeList() { 
+        List<Employee> employees = new ArrayList<>(); 
+        employees.add(new Employee("Amit Patel", "IT", "Software Engineer", 80000.00, java.sql.Date.valueOf("2016-07-12"))); 
+        employees.add(new Employee("Sneha Gupta", "IT", "Network Administrator", 85000.00, java.sql.Date.valueOf("2017-04-18"))); 
+        employees.add(new Employee("Rajesh Kumar", "IT", "Data Analyst", 75000.00, java.sql.Date.valueOf("2018-09-22"))); 
+        employees.add(new Employee("Neha Sharma", "HR", "HR Manager", 95000.00, java.sql.Date.valueOf("2017-06-05"))); 
+        employees.add(new Employee("Ankur Kapoor", "HR", "HR Specialist", 88000.00, java.sql.Date.valueOf("2016-08-15"))); 
+        employees.add(new Employee("Priya Desai", "Finance", "Financial Analyst", 90000.00, java.sql.Date.valueOf("2019-11-30"))); 
+        employees.add(new Employee("Rohit Joshi", "Marketing", "Marketing Coordinator", 82000.00, java.sql.Date.valueOf("2016-02
+10"))); 
+        employees.add(new Employee("Divya Singh", "Sales", "Sales Representative", 78000.00, java.sql.Date.valueOf("2017-09-05"))); 
+        return employees; 
+    } 
+}
+
+
+2ND Query: Write an Hibernate API to update the name of employee on id 1 
+UpdateEmployeeName.java 
+package hibernatejava; 
+import org.hibernate.Session; 
+import org.hibernate.SessionFactory; 
+import org.hibernate.Transaction; 
+import org.hibernate.cfg.Configuration; 
+ 
+public class UpdateEmployeeName { 
+    public static void main(String[] args) { 
+        SessionFactory factory = new Configuration().configure().addAnnotatedClass(Employee.class).buildSessionFactory(); 
+        Session session = factory.openSession(); 
+        Transaction tx = null; 
+ 
+        try { 
+            tx = session.beginTransaction(); 
+            Employee employeeToUpdate = session.get(Employee.class, 1); 
+            if (employeeToUpdate != null) { 
+                employeeToUpdate.setName("Yash Parmar"); 
+            } 
+            tx.commit(); 
+            System.out.println("Name Updated successfully!"); 
+        } catch (Exception e) { 
+            if (tx != null && tx.isActive()) { 
+                tx.rollback(); 
+            } 
+            e.printStackTrace(); 
+        } finally { 
+            session.close(); 
+            factory.close(); 
+        } 
+    } 
+} 
+
+3RD Query: Write an Hibernate API to delete an employee on id 3 
+DeleteEmployee.java 
+package hibernatejava; 
+import org.hibernate.Session; 
+import org.hibernate.SessionFactory; 
+ 
+import org.hibernate.Transaction; 
+import org.hibernate.cfg.Configuration; 
+public class DeleteEmployee { 
+    public static void main(String[] args) { 
+        SessionFactory factory = new Configuration().configure().addAnnotatedClass(Employee.class).buildSessionFactory(); 
+        Session session = factory.openSession(); 
+        Transaction tx = session.beginTransaction(); 
+        Employee employeeToDelete = session.get(Employee.class, 3); 
+        if (employeeToDelete != null) { 
+            session.delete(employeeToDelete); 
+        } 
+ 
+        tx.commit(); 
+        session.close(); 
+        factory.close(); 
+        System.out.println("Employee on id 3 successfully Deleted!"); 
+    } 
+} 
+
+
+2. Write a servlet Program to accept a String and determine whether the Strings length is greater than 6
+
+Lengthofthename.java 
+package mypackage2; 
+import java.io.IOException; 
+import java.io.PrintWriter; 
+import jakarta.servlet.ServletException; 
+import jakarta.servlet.annotation.WebServlet; 
+import jakarta.servlet.http.HttpServlet; 
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpServletResponse; 
+@WebServlet("/Lengthofthename") 
+public class Lengthofthename extends HttpServlet { 
+private static final long serialVersionUID = 1L; 
+protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+throws ServletException, IOException { 
+// Get the user-entered name parameter from the form 
+String userName = request.getParameter("userName"); 
+// Calculate the length of the name 
+int nameLength = userName.length(); 
+// Set the response content type 
+response.setContentType("text/html"); 
+// Get the PrintWriter 
+PrintWriter out = response.getWriter(); 
+// Write the HTML response 
+out.println("<html>"); 
+out.println("<head><title>Name Length</title></head>"); 
+out.println("<body>"); 
+out.println("<h2>Hello, " + userName + "!</h2>"); 
+out.println("<p>Your name has " + nameLength + " characters.</p>"); 
+out.println("</body>"); 
+out.println("</html>"); 
+} 
+} 
+web.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+xmlns="https://jakarta.ee/xml/ns/jakartaee"  
+xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"  
+id="WebApp_ID" version="6.0"> 
+<servlet> 
+<servlet-name>Lengthofthename</servlet-name> 
+<servlet-class>mypackage2.Lengthofthename</servlet-class> 
+</servlet> 
+<servlet-mapping> 
+<servlet-name>Lengthofthename</servlet-name> 
+<url-pattern>/mypackage2.Lengthofthename</url-pattern> 
+</servlet-mapping> 
+<welcome-file-list> 
+<welcome-file>index.jsp</welcome-file> 
+</welcome-file-list> 
+</web-app> 
+index.jsp 
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"  pageEncoding="ISO-8859-1"%> 
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Enter Your Name</title> 
+</head> 
+<body> 
+<form action="Lengthofthename" method="post"> 
+<label for="userName">Enter your name:</label> 
+<input type="text" id="userName" name="userName" required> 
+<br> 
+<input type="submit" value="Submit"> 
+</form> 
+</body> 
+</html> 
+
+
+
