@@ -1,0 +1,92 @@
+1. Write a servlet Program to accept a String and determine whether the String’s length is greater than 6. 
+
+Lengthofthename.java 
+package mypackage2; 
+import java.io.IOException; 
+import java.io.PrintWriter; 
+import jakarta.servlet.ServletException; 
+import jakarta.servlet.annotation.WebServlet; 
+import jakarta.servlet.http.HttpServlet; 
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpServletResponse; 
+@WebServlet("/Lengthofthename") 
+public class Lengthofthename extends HttpServlet { 
+private static final long serialVersionUID = 1L; 
+protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+throws ServletException, IOException { 
+// Get the user-entered name parameter from the form 
+String userName = request.getParameter("userName"); 
+// Calculate the length of the name 
+int nameLength = userName.length(); 
+// Set the response content type 
+response.setContentType("text/html"); 
+// Get the PrintWriter 
+PrintWriter out = response.getWriter(); 
+// Write the HTML response 
+out.println("<html>"); 
+out.println("<head><title>Name Length</title></head>"); 
+out.println("<body>"); 
+out.println("<h2>Hello, " + userName + "!</h2>"); 
+out.println("<p>Your name has " + nameLength + " characters.</p>"); 
+out.println("</body>"); 
+out.println("</html>"); 
+} 
+} 
+web.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+xmlns="https://jakarta.ee/xml/ns/jakartaee"  
+xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"  
+id="WebApp_ID" version="6.0"> 
+<servlet> 
+<servlet-name>Lengthofthename</servlet-name> 
+<servlet-class>mypackage2.Lengthofthename</servlet-class> 
+</servlet> 
+<servlet-mapping> 
+<servlet-name>Lengthofthename</servlet-name> 
+<url-pattern>/mypackage2.Lengthofthename</url-pattern> 
+</servlet-mapping> 
+<welcome-file-list> 
+<welcome-file>index.jsp</welcome-file> 
+</welcome-file-list> 
+</web-app> 
+index.jsp 
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"  pageEncoding="ISO-8859-1"%> 
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Enter Your Name</title> 
+</head> 
+<body> 
+<form action="Lengthofthename" method="post"> 
+<label for="userName">Enter your name:</label> 
+<input type="text" id="userName" name="userName" required> 
+<br> 
+<input type="submit" value="Submit"> 
+</form> 
+</body> 
+</html> 
+
+
+2. Write a Java code to print the string from a JSON object.
+ReadJsonString.java
+import org.json.JSONObject;
+
+public class ReadJsonString {
+    public static void main(String[] args) {
+
+        // JSON string
+        String jsonData = "{ \"name\": \"Aakash\", \"course\": \"BCA\" }";
+
+        // Convert string to JSON object
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        // Get string value from JSON
+        String name = jsonObject.getString("name");
+        String course = jsonObject.getString("course");
+
+        // Print values
+        System.out.println("Name: " + name);
+        System.out.println("Course: " + course);
+    }
+}
