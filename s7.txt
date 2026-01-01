@@ -1,0 +1,157 @@
+1.	Write a Spring MVC API to accept two numbers and return their addition
+
+) 
+addition_API.java 
+package springaddition; 
+import org.springframework.boot.SpringApplication; 
+import org.springframework.boot.autoconfigure.SpringBootApplication; 
+@SpringBootApplication 
+public class addition_API { 
+public static void main(String[] args) { 
+SpringApplication.run(addition_API.class, args); 
+System.out.println("Application started! " 
++ "Copy This URL: http://localhost:8080/add?num1=5&num2=10"); 
+} 
+}  
+AdditionController.java 
+package springaddition; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.RequestParam; 
+import org.springframework.web.bind.annotation.RestController; 
+@RestController 
+public class AdditionController { 
+@GetMapping("/add") 
+public String addNumbers(@RequestParam int num1, @RequestParam int num2) { 
+int sum = num1 + num2; 
+return "Spring MVC API : The sum of " + num1 + " and " + num2 + " is: " + sum; 
+} 
+} 
+Pom.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"> 
+<modelVersion>4.0.0</modelVersion> 
+<parent> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-parent</artifactId> 
+<version>3.0.1</version> 
+<relativePath/> 
+</parent> 
+<groupId>AdditionController</groupId> 
+<artifactId>PRACTICLA-10-2</artifactId> 
+<version>0.0.1-SNAPSHOT</version> 
+<name>PRACTICLA-10</name> 
+<description>Student API project using Spring Boot</description> 
+<properties> 
+<java.version>17</java.version> 
+</properties> 
+<dependencies> 
+<dependency> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-starter-web</artifactId> 
+</dependency> 
+</dependencies> 
+<build> 
+<plugins> 
+<plugin> 
+<groupId>org.springframework.boot</groupId> 
+<artifactId>spring-boot-maven-plugin</artifactId> 
+<configuration> 
+<mainClass>AdditionController</mainClass> 
+</configuration> 
+</plugin> 
+</plugins> 
+</build> 
+</project> 
+
+
+2. Write a Java Program using JSP to print the following. 
+
+1 1 1 1 1 
+2 2 2 2 
+3 3 3 
+4 4 
+5 
+
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pattern Program</title>
+</head>
+<body>
+
+<form action="PatternServlet">
+    <input type="submit" value="Print Pattern">
+</form>
+
+</body>
+</html>
+
+
+PatternServlet.java
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class PatternServlet extends HttpServlet {
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // Generate pattern
+        StringBuilder pattern = new StringBuilder();
+
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 5; j >= i; j--) {
+                pattern.append(i).append(" ");
+            }
+            pattern.append("<br>");
+        }
+
+        // Store pattern in request scope
+        request.setAttribute("pattern", pattern.toString());
+
+        // Forward to JSP
+        RequestDispatcher rd = request.getRequestDispatcher("pattern.jsp");
+        rd.forward(request, response);
+    }
+}
+
+
+pattern.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<html>
+<head>
+    <title>Pattern Output</title>
+</head>
+<body>
+
+<h2>Pattern Output</h2>
+
+<%
+    String result = (String) request.getAttribute("pattern");
+    out.print(result);
+%>
+
+</body>
+</html>
+
+
+web.xml 
+<web-app>
+    <servlet>
+        <servlet-name>PatternServlet</servlet-name>
+        <servlet-class>PatternServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>PatternServlet</servlet-name>
+        <url-pattern>/PatternServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+
+
+
