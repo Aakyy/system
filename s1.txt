@@ -1,0 +1,199 @@
+1. Write a HttpServlet to accept the values for following table and insert into it. Movie_id Movie_name Actor Actress Director releaseDate ratepoint i. Write a servlet to fetch the movie at id 9 ii. Write a servlet to fetch all the movies released between 3rd Jan 2018 and 3rd Jan 2019 (15)
+
+Database Table (Assumed)
+CREATE TABLE movies (
+    movie_id INT PRIMARY KEY,
+    movie_name VARCHAR(100),
+    actor VARCHAR(100),
+    actress VARCHAR(100),
+    director VARCHAR(100),
+    releaseDate DATE,
+    ratepoint FLOAT
+);
+
+
+InsertMovieServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/insertMovie")
+public class InsertMovieServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        int movieId = Integer.parseInt(request.getParameter("movie_id"));
+        String movieName = request.getParameter("movie_name");
+        String actor = request.getParameter("actor");
+        String actress = request.getParameter("actress");
+        String director = request.getParameter("director");
+        String releaseDate = request.getParameter("releaseDate"); // yyyy-mm-dd
+        float ratePoint = Float.parseFloat(request.getParameter("ratepoint"));
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/moviedb", "root", "password");
+
+            String sql = "INSERT INTO movies VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setInt(1, movieId);
+            ps.setString(2, movieName);
+            ps.setString(3, actor);
+            ps.setString(4, actress);
+            ps.setString(5, director);
+            ps.setDate(6, java.sql.Date.valueOf(releaseDate));
+            ps.setFloat(7, ratePoint);
+
+            ps.executeUpdate();
+            out.println("<h3>Movie inserted successfully!</h3>");
+
+            con.close();
+
+        } catch (Exception e) {
+            out.println(e);
+        }
+    }
+}
+
+
+FetchMovieByIdServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+
+@WebServlet("/fetchMovieById")
+public class FetchMovieByIdServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        int movieId = 9;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/moviedb", "root", "password");
+
+            String sql = "SELECT * FROM movies WHERE movie_id = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, movieId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                out.println("<h3>Movie Details</h3>");
+                out.println("ID: " + rs.getInt("movie_id") + "<br>");
+                out.println("Name: " + rs.getString("movie_name") + "<br>");
+                out.println("Actor: " + rs.getString("actor") + "<br>");
+                out.println("Actress: " + rs.getString("actress") + "<br>");
+                out.println("Director: " + rs.getString("director") + "<br>");
+                out.println("Release Date: " + rs.getDate("releaseDate") + "<br>");
+                out.println("Rating: " + rs.getFloat("ratepoint"));
+            } else {
+                out.println("<h3>No movie found with ID 9</h3>");
+            }
+
+            con.close();
+
+        } catch (Exception e) {
+            out.println(e);
+        }
+    }
+}
+
+FetchMoviesByDateServlet.java
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+
+@WebServlet("/fetchMoviesByDate")
+public class FetchMoviesByDateServlet extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/moviedb", "root", "password");
+
+            String sql = "SELECT * FROM movies WHERE releaseDate BETWEEN ? AND ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setDate(1, Date.valueOf("2018-01-03"));
+            ps.setDate(2, Date.valueOf("2019-01-03"));
+
+            ResultSet rs = ps.executeQuery();
+
+            out.println("<h3>Movies Released Between 3-Jan-2018 and 3-Jan-2019</h3>");
+
+            while (rs.next()) {
+                out.println("<hr>");
+                out.println("ID: " + rs.getInt("movie_id") + "<br>");
+                out.println("Name: " + rs.getString("movie_name") + "<br>");
+                out.println("Actor: " + rs.getString("actor") + "<br>");
+                out.println("Director: " + rs.getString("director") + "<br>");
+                out.println("Release Date: " + rs.getDate("releaseDate") + "<br>");
+                out.println("Rating: " + rs.getFloat("ratepoint") + "<br>");
+            }
+
+            con.close();
+
+        } catch (Exception e) {
+            out.println(e);
+        }
+    }
+}
+
+2. Write a Java Code to print the String from a JSON Object 
+
+ReadJsonString.java
+import org.json.JSONObject;
+
+public class ReadJsonString {
+    public static void main(String[] args) {
+
+        // JSON string
+        String jsonData = "{ \"name\": \"Aakash\", \"course\": \"BCA\" }";
+
+        // Convert string to JSON object
+        JSONObject jsonObject = new JSONObject(jsonData);
+
+        // Get string value from JSON
+        String name = jsonObject.getString("name");
+        String course = jsonObject.getString("course");
+
+        // Print values
+        System.out.println("Name: " + name);
+        System.out.println("Course: " + course);
+    }
+}
