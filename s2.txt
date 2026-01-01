@@ -1,0 +1,173 @@
+1) Write a servlet to determine whether the number is prime or not. 
+A) 
+ 
+PrimeNumberServlet.java 
+package Mypackage; 
+import java.io.IOException; 
+import java.io.PrintWriter; 
+import jakarta.servlet.ServletException; 
+import jakarta.servlet.annotation.WebServlet; 
+import jakarta.servlet.http.HttpServlet; 
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpServletResponse; 
+ 
+@WebServlet("/PrimeNumberServlet") 
+public class PrimeNumberServlet extends HttpServlet { 
+    private static final long serialVersionUID = 1L; 
+ 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
+        response.setContentType("text/html"); 
+        PrintWriter out; 
+        try { 
+            out = response.getWriter(); 
+ 
+            // Get the number parameter from the request 
+            String numberParam = request.getParameter("number"); 
+            if (numberParam != null && !numberParam.isEmpty()) { 
+                try { 
+                    int number = Integer.parseInt(numberParam); 
+                    boolean isPrime = checkPrime(number); 
+                    request.setAttribute("number", number); 
+                    request.setAttribute("isPrime", isPrime); 
+                    request.getRequestDispatcher("/index.jsp").forward(request, response); 
+                }  
+catch (NumberFormatException e) { 
+                    out.println("Invalid number format. Please provide a valid integer."); 
+                } 
+            }  
+else { 
+                out.println("Please provide a number parameter."); 
+            } 
+        }  
+catch (IOException e) { 
+            e.printStackTrace(); // Handle the exception more gracefully in a production environment. 
+        } 
+    } 
+    private boolean checkPrime(int number) { 
+        if (number <= 1) { 
+            return false; 
+        } 
+        for (int i = 2; i <= Math.sqrt(number); i++) { 
+            if (number % i == 0) { 
+                return false; 
+            } 
+        } 
+ 
+        return true; 
+    } 
+} 
+ 
+Web.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" 
+         version="4.0">   
+  <display-name>PrimeNumberServlet</display-name> 
+  <servlet> 
+    <servlet-name>PrimeNumberServlet</servlet-name> 
+    <servlet-class>Mypackage.PrimeNumberServlet</servlet-class> 
+</servlet> 
+<servlet-mapping> 
+    <servlet-name>PrimeNumberServlet</servlet-name> 
+    <url-pattern>/Mypackage/PrimeNumberServlet</url-pattern> 
+</servlet-mapping> 
+</web-app> 
+ 
+Index.jsp 
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <meta charset="UTF-8"> 
+    <title>Prime Number Checker</title> 
+</head> 
+<body> 
+    <h2>Prime Number Checker</h2> 
+    <form action="PrimeNumberServlet" method="get" onsubmit="return validateForm()"> 
+        Enter a number: <input type="text" name="number"> 
+        <input type="submit" value="Check"> 
+    </form> 
+ 
+    <% 
+        if (request.getAttribute("isPrime") != null) { 
+            boolean isPrime = (boolean) request.getAttribute("isPrime"); 
+            if (isPrime) { 
+                out.println("The number " + request.getAttribute("number") + " is prime."); 
+            } else { 
+                out.println("The number " + request.getAttribute("number") + " is not prime."); 
+            }     } 
+    %> 
+</body> 
+</html> 
+
+
+     2. Write a servlet Program to accept a String and determine whether the String’s length is greater   
+         than 6.  
+
+Lengthofthename.java 
+package mypackage2; 
+import java.io.IOException; 
+import java.io.PrintWriter; 
+import jakarta.servlet.ServletException; 
+import jakarta.servlet.annotation.WebServlet; 
+import jakarta.servlet.http.HttpServlet; 
+import jakarta.servlet.http.HttpServletRequest; 
+import jakarta.servlet.http.HttpServletResponse; 
+@WebServlet("/Lengthofthename") 
+public class Lengthofthename extends HttpServlet { 
+private static final long serialVersionUID = 1L; 
+protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+throws ServletException, IOException { 
+// Get the user-entered name parameter from the form 
+String userName = request.getParameter("userName"); 
+// Calculate the length of the name 
+int nameLength = userName.length(); 
+// Set the response content type 
+response.setContentType("text/html"); 
+// Get the PrintWriter 
+PrintWriter out = response.getWriter(); 
+// Write the HTML response 
+out.println("<html>"); 
+out.println("<head><title>Name Length</title></head>"); 
+out.println("<body>"); 
+out.println("<h2>Hello, " + userName + "!</h2>"); 
+out.println("<p>Your name has " + nameLength + " characters.</p>"); 
+out.println("</body>"); 
+out.println("</html>"); 
+} 
+} 
+web.xml 
+<?xml version="1.0" encoding="UTF-8"?> 
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+xmlns="https://jakarta.ee/xml/ns/jakartaee"  
+xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"  
+id="WebApp_ID" version="6.0"> 
+<servlet> 
+<servlet-name>Lengthofthename</servlet-name> 
+<servlet-class>mypackage2.Lengthofthename</servlet-class> 
+</servlet> 
+<servlet-mapping> 
+<servlet-name>Lengthofthename</servlet-name> 
+<url-pattern>/mypackage2.Lengthofthename</url-pattern> 
+</servlet-mapping> 
+<welcome-file-list> 
+<welcome-file>index.jsp</welcome-file> 
+</welcome-file-list> 
+</web-app> 
+index.jsp 
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"  pageEncoding="ISO-8859-1"%> 
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Enter Your Name</title> 
+</head> 
+<body> 
+<form action="Lengthofthename" method="post"> 
+<label for="userName">Enter your name:</label> 
+<input type="text" id="userName" name="userName" required> 
+<br> 
+<input type="submit" value="Submit"> 
+</form> 
+</body> 
+</html> 
