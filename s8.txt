@@ -1,0 +1,188 @@
+1. Write a Spring MVC API to accept a string and determine if it is palindrome or not. 
+
+palindromeAPI.java(main)
+package springpalindromeAPI;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class palindromeAPI {
+
+    public static void main(String[] args) {
+        SpringApplication.run(palindromeAPI.class, args);
+    }
+}
+
+PalindromeApplication.java
+package springpalindromeAPI;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+@SpringBootApplication
+@RestController
+@RequestMapping("/palindrome")
+public class PalindromeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(PalindromeApplication.class, args);
+    }
+    @PostMapping
+    public @ResponseBody String checkPalindrome(@RequestBody PalindromeInput input) {
+        String text = input.getInput();
+        String cleanText = text.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+        boolean isPalindrome = cleanText.equalsIgnoreCase(new StringBuilder(cleanText).reverse().toString());
+        if (isPalindrome) {
+            return text + "\n" + " is a palindrome!";
+        } else {
+            return text + "\n" + "is not a palindrome."; // Added newline and explicit "not"
+        }
+    }
+}
+
+class PalindromeInput {
+    private String input;
+    public String getInput() {
+        return input;
+    }
+    public void setInput(String input) {
+        this.input = input;
+    }
+}
+
+pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>3.1.6</version>
+	<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>palindromeAPI</groupId>
+	<artifactId>PRACTCIAL-10-3</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>PRACTCIAL-10-3</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+	<java.version>17</java.version>
+	</properties>
+<dependencies>
+	<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+</dependencies>
+<build>
+<plugins>
+<plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+	<configuration>
+                <mainClass>palindromeAPI</mainClass>
+            </configuration>		
+</plugin>
+</plugins>
+</build>
+</project>
+
+
+2. Write a JSP which accepts the parameter in JSON String and later convert that value and display on the screen
+
+MyJSONServlet.java
+package jsonstring;
+import java.io.IOException;
+import java.util.Iterator;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+@WebServlet("/MyJSONServlet")
+public class MyJSONServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.sendRedirect("MyServlet");
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Get JSON string
+        String jsonString = request.getParameter("json_data");
+        // JSON parser
+        JSONParser parser = new JSONParser();
+        // Parse JSON
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = (JSONObject) parser.parse(jsonString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            response.getWriter().write("Unable to parse JSON");
+            return;       }
+        // Construct a string to display all key-value pairs
+        StringBuilder convertedValue = new StringBuilder("<br>");
+        // Iterate through all keys and values
+        Iterator<?> keys = jsonObject.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = (String) keys.next();
+            Object value = jsonObject.get(key);
+            convertedValue.append(key).append(": ").append(value).append("<br>");
+        }
+        // Set request attribute
+        request.setAttribute("convertedValue", convertedValue.toString());
+        // Forward to JSP page
+        RequestDispatcher rd = request.getRequestDispatcher("/myJSP.jsp");
+        rd.forward(request, response);
+    }
+}
+Index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Parameter Demo</title>
+    <style>
+        #json_data {
+            min-height: 30px; /* Adjust this value based on your design */
+            resize: both; /* Enables manual resizing */  }
+    </style>
+</head>
+<body>
+    <h1>SEND JSON DATA</h1>
+    <form method="POST" action="/JSONWebApp/MyJSONServlet">
+        <label for="json_data">Enter JSON string:</label><br>
+        <textarea id="json_data" name="json_data"></textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+
+MyJSP.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<% String convertedValue = (String) request.getAttribute("convertedValue"); %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converted Value</title>
+</head>
+<body>
+    <h1>Accepting the Parameter in JSON</h1>
+    <% if (convertedValue != null) { %>
+        <p>JSON String Values: <%= convertedValue %></p>
+    <% } else { %>
+        <p>No value received yet.</p>
+    <% } %>
+</body>
+</html>
